@@ -150,9 +150,9 @@ class Cliente extends Persona {
         this.bloqueado = false;
         this.rol = "cliente";
         this.cuentas = [
-            new CuentaAhorros(`AH-${identificacion}`, 100000),
-            new CuentaCorriente(`CC-${identificacion}`, 200000),
-            new TarjetaCredito(`TC-${identificacion}`, 3000000)
+            new CuentaAhorros(`AH-${identificacion}`, 0),
+            new CuentaCorriente(`CC-${identificacion}`, 0),
+            new TarjetaCredito(`TC-${identificacion}`, 1000000)
         ];
     }
 }
