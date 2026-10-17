@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bóbeda - Financial Bank</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Contenedor de Alertas Personalizadas (Rojo) -->
+    <div id="alerta-modal" class="modal oculto">
+        <div class="modal-contenido">
+            <span id="alerta-texto">Mensaje de alerta</span>
+            <button id="alerta-cerrar" class="btn-negro">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- VISTA 1: LANDING PAGE -->
+    <section id="vista-landing" class="vista">
+        <header class="header">
+            <h1>BÓBEDA</h1>
+            <p>Financial Bank</p>
+        </header>
+        <main class="container">
+            <div class="card-bienvenida">
+                <h2>Seguridad y Control Financiero</h2>
+                <p>Bienvenido al sistema bancario inteligente. Administre sus cuentas de ahorros, corrientes y tarjetas de crédito con total seguridad.</p>
+                <div class="acciones-landing">
+                    <button onclick="app.mostrarVista('vista-login')" class="btn-negro">Iniciar Sesión</button>
+                    <button onclick="app.mostrarVista('vista-registro')" class="btn-blanco">Registrarse</button>
+                </div>
+            </div>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2026 Bóbeda Financial Bank. Todos los derechos reservados.</p>
+        </footer>
+    </section>
+
+    <!-- VISTA 2: REGISTRO -->
+    <section id="vista-registro" class="vista oculto">
+        <header class="header">
+            <h2>Registro de Cliente</h2>
+            <button onclick="app.mostrarVista('vista-landing')" class="btn-link">← Volver</button>
+        </header>
+        <main class="container">
+            <form id="form-registro" class="form-banco">
+                <input type="text" id="reg-id" placeholder="Cédula o Pasaporte" required>
+                <input type="text" id="reg-nombre" placeholder="Nombre Completo" required>
+                <input type="email" id="reg-email" placeholder="Correo Electrónico" required>
+                <input type="tel" id="reg-celular" placeholder="Número de Celular" required>
+                <input type="text" id="reg-usuario" placeholder="Nombre de Usuario (Único)" required>
+                <input type="password" id="reg-password" placeholder="Contraseña (mín. 4 caracteres)" required>
+                <input type="password" id="reg-password-confirm" placeholder="Confirmar Contraseña" required>
+                <button type="submit" class="btn-negro">Crear Cuenta</button>
+            </form>
+        </main>
+    </section>
+
+    <!-- VISTA 3: LOGIN -->
+    <section id="vista-login" class="vista oculto">
+        <header class="header">
+            <h2>Iniciar Sesión</h2>
+            <button onclick="app.mostrarVista('vista-landing')" class="btn-link">← Volver</button>
+        </header>
+        <main class="container">
+            <form id="form-login" class="form-banco">
+                <input type="text" id="login-usuario" placeholder="Usuario" required>
+                <input type="password" id="login-password" placeholder="Contraseña" required>
+                <div id="intentos-info" class="texto-rojo oculto">Intentos fallidos: <span id="contador-intentos">0</span>/3</div>
+                <button type="submit" id="btn-login-submit" class="btn-negro">Entrar</button>
+            </form>
+        </main>
+    </section>
+
+    <!-- VISTA 4: PANEL DEL CLIENTE (TRANSACCIONES) -->
+    <section id="vista-panel" class="vista oculto">
+        <header class="header-panel">
+            <div>
+                <h3>Hola, <span id="lbl-usuario-activo">Usuario</span></h3>
+                <p id="lbl-estado-cuenta">Panel Principal Bóbeda</p>
+            </div>
+            <button onclick="app.cerrarSesion()" class="btn-rojo-sm">Salir</button>
+        </header>
+        <main class="container-panel">
+            <div class="grid-menu">
+                <button onclick="app.abrirSeccion('seccion-saldo')" class="btn-menu">Consultar Saldo</button>
+                <button onclick="app.abrirSeccion('seccion-consignar')" class="btn-menu">Consignar Dinero</button>
+                <button onclick="app.abrirSeccion('seccion-retirar')" class="btn-menu">Retirar Dinero</button>
+                <button onclick="app.abrirSeccion('seccion-movimientos')" class="btn-menu">Ver Movimientos</button>
+                <button onclick="app.abrirSeccion('seccion-transferir')" class="btn-menu">Transferir</button>
+                <button onclick="app.abrirSeccion('seccion-tarjeta')" class="btn-menu">Tarjeta Crédito</button>
+                <button onclick="app.abrirSeccion('seccion-perfil')" class="btn-menu">Perfil y Seguridad</button>
+            </div>
+
+            <div id="contenedor-secciones" class="secciones-card">
+                <!-- Saldo -->
+                <div id="seccion-saldo" class="panel-seccion oculto">
+                    <h4>Saldo Actual</h4>
+                    <div id="info-saldo" class="caja-resultado">$0.00</div>
+                    <button onclick="app.liquidarInteresesAhorrosManual()" class="btn-blanco" style="margin-top:10px; font-size:0.85rem;">Calcular Intereses Ahorros (1.5%)</button>
+                </div>
+                <!-- Consignar -->
+                <div id="seccion-consignar" class="panel-seccion oculto">
+                    <h4>Consignar Dinero</h4>
+                    <select id="select-cuenta-consignar" class="input-banco"></select>
+                    <input type="number" id="monto-consignar" placeholder="Monto a consignar" min="1" step="any" class="input-banco">
+                    <button onclick="app.guardarDinero()" class="btn-negro">Depositar</button>
+                </div>
+                <!-- Retirar -->
+                <div id="seccion-retirar" class="panel-seccion oculto">
+                    <h4>Retirar Dinero</h4>
+                    <select id="select-cuenta-retirar" class="input-banco"></select>
+                    <input type="number" id="monto-retirar" placeholder="Monto a retirar" min="1" step="any" class="input-banco">
+                    <button onclick="app.retirarDinero()" class="btn-negro">Retirar</button>
+                </div>
+                <!-- Movimientos -->
+                <div id="seccion-movimientos" class="panel-seccion oculto">
+                    <h4>Historial de Movimientos</h4>
+                    <select id="select-cuenta-movimientos" class="input-banco" onchange="app.renderizarMovimientos()"></select>
+                    <div id="lista-movimientos" class="lista-movs"></div>
+                </div>
+                <!-- Transferencias -->
+                <div id="seccion-transferir" class="panel-seccion oculto">
+                    <h4>Transferencias</h4>
+                    <label>Cuenta Origen:</label>
+                    <select id="trans-origen" class="input-banco"></select>
+                    <label>Destino (Usuario / Cuenta):</label>
+                    <input type="text" id="trans-usuario-dest" placeholder="Usuario destino" class="input-banco">
+                    <select id="trans-destino-tipo" class="input-banco">
+                        <option value="ahorros">Cuenta Ahorros</option>
+                        <option value="corriente">Cuenta Corriente</option>
+                    </select>
+                    <input type="number" id="monto-transferir" placeholder="Monto a transferir" class="input-banco">
+                    <button onclick="app.transferirDinero()" class="btn-negro">Transferir</button>
+                </div>
+                <!-- Tarjeta de Crédito -->
+                <div id="seccion-tarjeta" class="panel-seccion oculto">
+                    <h4>Tarjeta de Crédito (Ultra Plata Platinum)</h4>
+                    <p>Cupo Disponible: <span id="tc-cupo">$0</span></p>
+                    <input type="number" id="tc-monto" placeholder="Valor de compra" class="input-banco">
+                    <input type="number" id="tc-cuotas" placeholder="Número de cuotas (ej. 1 a 12)" min="1" max="36" class="input-banco">
+                    <button onclick="app.comprarTarjetaCredito()" class="btn-negro">Simular Compra a Cuotas</button>
+                    <div id="tc-resultado" class="caja-resultado oculto"></div>
+                </div>
+                <!-- Perfil y Seguridad -->
+                <div id="seccion-perfil" class="panel-seccion oculto">
+                    <h4>Editar Perfil</h4>
+                    <input type="text" id="perfil-nombre" class="input-banco" placeholder="Nombre completo">
+                    <input type="email" id="perfil-email" class="input-banco" placeholder="Correo electrónico">
+                    <input type="tel" id="perfil-celular" class="input-banco" placeholder="Celular">
+                    <button onclick="app.actualizarPerfil()" class="btn-negro">Guardar Cambios</button>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ccc;">
+                    <h4>Cambiar Contraseña</h4>
+                    <input type="password" id="pass-actual" class="input-banco" placeholder="Contraseña actual">
+                    <input type="password" id="pass-nueva" class="input-banco" placeholder="Nueva contraseña">
+                    <input type="password" id="pass-confirmar" class="input-banco" placeholder="Confirmar nueva contraseña">
+                    <button onclick="app.cambiarPassword()" class="btn-negro">Actualizar Contraseña</button>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- VISTA 5: PANEL DE ADMINISTRACIÓN -->
+    <section id="vista-admin" class="vista oculto">
+        <header class="header-panel" style="background-color: #333;">
+            <div>
+                <h3>Panel Administrador</h3>
+                <p>Gestión del Sistema Bóbeda</p>
+            </div>
+            <button onclick="app.cerrarSesion()" class="btn-rojo-sm">Salir</button>
+        </header>
+        <main class="container-panel">
+            <div class="secciones-card">
+                <h4>Usuarios Registrados</h4>
+                <div id="admin-lista-usuarios" style="margin-top: 15px; max-height: 350px; overflow-y: auto;"></div>
+            </div>
+        </main>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
